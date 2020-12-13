@@ -1,11 +1,15 @@
-import token
 import telebot
+from telebot.types import Message
 
-bot = telebot.TeleBot(token.my_token)
+TOKEN = '1438159737:AAFrC7GeLkJi_wpKVkl9DB46fgVVmO9elQo'
+bot = telebot.TeleBot(TOKEN)
 
-@bot.message_handler(content_types=["text"])
-def repeat_all_messages(message): # Название функции не играет никакой роли
-  bot.send_message(message.chat.id, message.text)
+@bot.message_handler(commands=['start', 'help'])
+def send_welcome(message):
+	bot.reply_to(message, "Привет")
 
-if __name__ == '__main__':
-  bot.infinity_polling()
+@bot.message_handler(func=lambda message: True)
+def upper(message: Message):
+  bot.reply_to(message, message.text.upper())
+
+bot.polling()
