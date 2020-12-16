@@ -13,3 +13,11 @@ then activate environment:
 ```
 env\Scripts\activate
 ```
+
+## How to deploy
+
+deploy on heroku with github connected
+then activate script with command in heroku CLI:
+```
+heroku ps:scale worker=1
+```
