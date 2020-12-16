@@ -21,3 +21,7 @@ then activate script with command in heroku CLI:
 ```
 heroku ps:scale worker=1
 ```
+turn off heroku dyno to test bot locally
+```
+heroku ps:scale worker=0
+```
