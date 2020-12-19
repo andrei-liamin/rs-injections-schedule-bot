@@ -1,23 +1,29 @@
 import telebot
 import datetime
 from telebot.types import Message
+from apscheduler.schedulers.background import BackgroundScheduler
 
 TOKEN = '1438159737:AAFrC7GeLkJi_wpKVkl9DB46fgVVmO9elQo'
 bot = telebot.TeleBot(TOKEN)
+body_scheme_photo_id = 'AgACAgIAAxkBAAOXX95mA4r7tTKG0l6SKkl0JfQTTs0AAnqtMRuanlFKpCPw2klIdqFLfteWLgADAQADAgADeQADkq0AAh4E'
 
-now = datetime.datetime.now()
-midnight = datetime.datetime(
-  now.year,
-  now.month,
-  now.day,
-  23,
-  43)
+# background scheduler
+sched = BackgroundScheduler()
 
-if now == midnight:
-  bot.send_message(116733030, "NOW")
+@sched.scheduled_job('cron', day_of_week='mon-sun', hour=11, minute=00, second=0)
+def timed_job():
+  bot.send_photo(116733030, photo=body_scheme_photo_id, caption="Пора ширнуться!")
+
+sched.start()
+
+# message handlers
 
 @bot.message_handler(commands=['start', 'help'])
-def send_welcome(message: Message):
+def message_props(message: Message):
+	bot.reply_to(message, message)
+
+@bot.message_handler(content_types=['photo'])
+def photo_props(message: Message):
 	bot.reply_to(message, message)
 
 @bot.message_handler(func=lambda message: True)
