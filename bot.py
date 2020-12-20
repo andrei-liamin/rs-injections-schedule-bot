@@ -10,7 +10,7 @@ body_scheme_photo_id = 'AgACAgIAAxkBAAOXX95mA4r7tTKG0l6SKkl0JfQTTs0AAnqtMRuanlFK
 # background scheduler
 sched = BackgroundScheduler()
 
-@sched.scheduled_job('cron', day_of_week='mon-sun', hour=11, minute=00, second=0)
+@sched.scheduled_job('cron', day_of_week='mon-sun', hour=12, minute=42, second=0)
 def timed_job():
   bot.send_photo(116733030, photo=body_scheme_photo_id, caption="Пора ширнуться!")
 

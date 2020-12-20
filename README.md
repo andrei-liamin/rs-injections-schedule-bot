@@ -25,3 +25,14 @@ turn off heroku dyno to test bot locally
 ```
 heroku ps:scale worker=0
 ```
+
+## Useful resources
+
+Telegram API
+https://core.telegram.org/bots/api
+
+pyTelegramBotAPI docs
+https://github.com/eternnoir/pyTelegramBotAPI
+
+APScheduler docs
+https://apscheduler.readthedocs.io/en/stable/
