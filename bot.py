@@ -1,43 +1,64 @@
 import telebot
 from tzlocal import get_localzone
 from datetime import datetime
-from telebot.types import Message
+from telebot import types
 from apscheduler.schedulers.background import BackgroundScheduler
 
 
 TOKEN = '1438159737:AAFrC7GeLkJi_wpKVkl9DB46fgVVmO9elQo'
+my_chat_id = 116733030
+txt_done = "Готово"
+txt_postpone = "Напомни позже"
+
 bot = telebot.TeleBot(TOKEN)
 body_scheme_photo_id = 'AgACAgIAAxkBAAOXX95mA4r7tTKG0l6SKkl0JfQTTs0AAnqtMRuanlFKpCPw2klIdqFLfteWLgADAQADAgADeQADkq0AAh4E'
 
 # background scheduler
-sched = BackgroundScheduler()
+daily_sched = BackgroundScheduler()
+hourly_sched = BackgroundScheduler()
 
-@sched.scheduled_job('cron', day_of_week='mon-sun', hour=1, minute=5, second=0, timezone=get_localzone())
-def timed_job():
-  bot.send_photo(116733030, photo=body_scheme_photo_id, caption="Пора ширнуться!")
+@daily_sched.scheduled_job('cron', day_of_week='mon-sun', hour=0, minute=39, second=00)
+def daily_job():
+	markup = types.ReplyKeyboardMarkup()
+	btn_done = types.KeyboardButton(txt_done)
+	btn_postpone = types.KeyboardButton(txt_postpone)
+	markup.add(btn_done, btn_postpone)
 
-sched.start()
+	@hourly_sched.scheduled_job('interval', seconds=15)
+	def hourly_job():
+		bot.send_photo(my_chat_id, photo=body_scheme_photo_id, caption="Пора ширнуться!", reply_markup=markup)
+	hourly_sched.start()
+
+
+daily_sched.start()
 
 # message handlers
 
 @bot.message_handler(commands=['start', 'help'])
-def message_props(message: Message):
+def message_props(message: types.Message):
 	bot.reply_to(message, datetime.now())
 
 @bot.message_handler(commands=['stz'])
-def message_props(message: Message):
+def message_props(message: types.Message):
 	bot.reply_to(message, datetime.now())
 
 @bot.message_handler(commands=['ltz'])
-def message_props(message: Message):
+def message_props(message: types.Message):
 	bot.reply_to(message, get_localzone())
 
 @bot.message_handler(content_types=['photo'])
-def photo_props(message: Message):
+def photo_props(message: types.Message):
 	bot.reply_to(message, message)
 
-@bot.message_handler(func=lambda message: True)
-def upper(message: Message):
-  bot.reply_to(message, message.text.upper())
+markup_clear = types.ReplyKeyboardRemove()
+
+@bot.message_handler(func=lambda message: message.text == txt_done)
+def success(message: types.Message):
+	hourly_sched.shutdown()
+	bot.send_message(my_chat_id, "Красавчик!", reply_markup=markup_clear)
+
+@bot.message_handler(func=lambda message: message.text == txt_postpone)
+def postpone(message: types.Message):
+  bot.send_message(my_chat_id, "ок, подождём...", reply_markup=markup_clear)
 
 bot.polling()
