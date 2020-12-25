@@ -4,7 +4,6 @@ from datetime import datetime
 from telebot import types
 from apscheduler.schedulers.background import BackgroundScheduler
 
-
 TOKEN = '1438159737:AAFrC7GeLkJi_wpKVkl9DB46fgVVmO9elQo'
 my_chat_id = 116733030
 txt_done = "Готово"
@@ -17,18 +16,17 @@ body_scheme_photo_id = 'AgACAgIAAxkBAAOXX95mA4r7tTKG0l6SKkl0JfQTTs0AAnqtMRuanlFK
 daily_sched = BackgroundScheduler()
 hourly_sched = BackgroundScheduler()
 
-@daily_sched.scheduled_job('cron', day_of_week='mon-sun', hour=0, minute=39, second=00)
+@daily_sched.scheduled_job('cron', day_of_week='mon-sun', hour=8, minute=0, second=0)
 def daily_job():
 	markup = types.ReplyKeyboardMarkup()
 	btn_done = types.KeyboardButton(txt_done)
 	btn_postpone = types.KeyboardButton(txt_postpone)
 	markup.add(btn_done, btn_postpone)
 
-	@hourly_sched.scheduled_job('interval', seconds=15)
+	@hourly_sched.scheduled_job('interval', minutes=30)
 	def hourly_job():
 		bot.send_photo(my_chat_id, photo=body_scheme_photo_id, caption="Пора ширнуться!", reply_markup=markup)
 	hourly_sched.start()
-
 
 daily_sched.start()
 
@@ -37,18 +35,6 @@ daily_sched.start()
 @bot.message_handler(commands=['start', 'help'])
 def message_props(message: types.Message):
 	bot.reply_to(message, datetime.now())
-
-@bot.message_handler(commands=['stz'])
-def message_props(message: types.Message):
-	bot.reply_to(message, datetime.now())
-
-@bot.message_handler(commands=['ltz'])
-def message_props(message: types.Message):
-	bot.reply_to(message, get_localzone())
-
-@bot.message_handler(content_types=['photo'])
-def photo_props(message: types.Message):
-	bot.reply_to(message, message)
 
 markup_clear = types.ReplyKeyboardRemove()
 
