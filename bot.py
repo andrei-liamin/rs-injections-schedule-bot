@@ -16,14 +16,14 @@ body_scheme_photo_id = 'AgACAgIAAxkBAAOXX95mA4r7tTKG0l6SKkl0JfQTTs0AAnqtMRuanlFK
 daily_sched = BackgroundScheduler()
 hourly_sched = BackgroundScheduler()
 
-@daily_sched.scheduled_job('cron', day_of_week='mon-sun', hour=8, minute=0, second=0)
+@daily_sched.scheduled_job('cron', day_of_week='mon-sun', hour=20, minute=0, second=0)
 def daily_job():
 	markup = types.ReplyKeyboardMarkup()
 	btn_done = types.KeyboardButton(txt_done)
 	btn_postpone = types.KeyboardButton(txt_postpone)
 	markup.add(btn_done, btn_postpone)
 
-	@hourly_sched.scheduled_job('interval', minutes=30)
+	@hourly_sched.scheduled_job('interval', minutes=1)
 	def hourly_job():
 		bot.send_photo(my_chat_id, photo=body_scheme_photo_id, caption="Пора ширнуться!", reply_markup=markup)
 	hourly_sched.start()
