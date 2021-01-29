@@ -1,10 +1,17 @@
+import os
 import telebot
 from tzlocal import get_localzone
 from datetime import datetime
 from telebot import types
 from apscheduler.schedulers.background import BackgroundScheduler
 
-TOKEN = '1438159737:AAFrC7GeLkJi_wpKVkl9DB46fgVVmO9elQo'
+from dotenv import load_dotenv
+
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path)
+
+TOKEN = os.environ.get("BOT_TOKEN")
 my_chat_id = 116733030
 txt_done = "Готово"
 txt_postpone = "Напомни позже"
@@ -32,7 +39,7 @@ daily_sched.start()
 
 # message handlers
 
-@bot.message_handler(commands=['start', 'help'])
+@bot.message_handler(commands=['time'])
 def message_props(message: types.Message):
 	bot.reply_to(message, datetime.now())
 
