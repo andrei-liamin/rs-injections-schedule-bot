@@ -1,7 +1,8 @@
 import os
+import math
 import telebot
 from tzlocal import get_localzone
-from datetime import datetime
+from datetime import datetime, date
 from telebot import types
 from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -19,23 +20,36 @@ txt_postpone = "Напомни позже"
 bot = telebot.TeleBot(TOKEN)
 body_scheme_photo_id = 'AgACAgIAAxkBAAOXX95mA4r7tTKG0l6SKkl0JfQTTs0AAnqtMRuanlFKpCPw2klIdqFLfteWLgADAQADAgADeQADkq0AAh4E'
 
+week = str(math.ceil((datetime.now().date() - date(2021, 1, 10)).days % 28 / 7))
+week_day = datetime.now().strftime("%A")
+caption = week + " " + week_day
+
 # background scheduler
 daily_sched = BackgroundScheduler()
 hourly_sched = BackgroundScheduler()
 
+# buttons
+markup = types.ReplyKeyboardMarkup()
+btn_done = types.KeyboardButton(txt_done)
+btn_postpone = types.KeyboardButton(txt_postpone)
+markup.add(btn_done, btn_postpone)
+
 @daily_sched.scheduled_job('cron', day_of_week='mon-sun', hour=7, minute=30, second=0)
+# @daily_sched.scheduled_job('cron', start_date="2021-02-02T00:31:00", minute="*/2", second=0)
 def daily_job():
-	markup = types.ReplyKeyboardMarkup()
-	btn_done = types.KeyboardButton(txt_done)
-	btn_postpone = types.KeyboardButton(txt_postpone)
-	markup.add(btn_done, btn_postpone)
-
 	@hourly_sched.scheduled_job('interval', minutes=30)
+	# @hourly_sched.scheduled_job('interval', seconds=5)
 	def hourly_job():
-		bot.send_photo(my_chat_id, photo=body_scheme_photo_id, caption="Пора ширнуться!", reply_markup=markup)
+		bot.send_photo(my_chat_id, photo=body_scheme_photo_id, caption=caption, reply_markup=markup)
 	hourly_sched.start()
-
 daily_sched.start()
+
+# test
+
+# print(type((date(2021, 1, 7) - date(2021, 1, 4)).days))
+# print(math.ceil((datetime.now().date() - date(2021, 1, 10)).days % 28 / 7))
+# print(caption)
+# print(datetime.now().strftime("%A"))
 
 # message handlers
 
