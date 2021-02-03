@@ -1,10 +1,10 @@
 import os
 import math
 import telebot
-from tzlocal import get_localzone
 from datetime import datetime, date
 from telebot import types
 from apscheduler.schedulers.background import BackgroundScheduler
+from ids import body_scheme_photo_ids
 
 from dotenv import load_dotenv
 
@@ -18,11 +18,6 @@ txt_done = "Готово"
 txt_postpone = "Напомни позже"
 
 bot = telebot.TeleBot(TOKEN)
-body_scheme_photo_id = 'AgACAgIAAxkBAAOXX95mA4r7tTKG0l6SKkl0JfQTTs0AAnqtMRuanlFKpCPw2klIdqFLfteWLgADAQADAgADeQADkq0AAh4E'
-
-week = str(math.ceil((datetime.now().date() - date(2021, 1, 10)).days % 28 / 7))
-week_day = datetime.now().strftime("%A")
-caption = week + " " + week_day
 
 # background scheduler
 daily_sched = BackgroundScheduler()
@@ -35,10 +30,17 @@ btn_postpone = types.KeyboardButton(txt_postpone)
 markup.add(btn_done, btn_postpone)
 
 @daily_sched.scheduled_job('cron', day_of_week='mon-sun', hour=7, minute=30, second=0)
-# @daily_sched.scheduled_job('cron', start_date="2021-02-02T00:31:00", minute="*/2", second=0)
 def daily_job():
+	week = str(math.ceil((datetime.now().date() - date(2021, 1, 10)).days % 28 / 7))
+	week_day = datetime.now().strftime("%A")
+	caption = week + " " + week_day
+
+	week_int = math.floor((datetime.now().date() - date(2021, 1, 10)).days % 28 / 7)
+	week_day_int = datetime.now().weekday()
+
+	body_scheme_photo_id = body_scheme_photo_ids[week_int][week_day_int]
+
 	@hourly_sched.scheduled_job('interval', minutes=30)
-	# @hourly_sched.scheduled_job('interval', seconds=5)
 	def hourly_job():
 		bot.send_photo(my_chat_id, photo=body_scheme_photo_id, caption=caption, reply_markup=markup)
 	hourly_sched.start()
@@ -49,7 +51,9 @@ daily_sched.start()
 # print(type((date(2021, 1, 7) - date(2021, 1, 4)).days))
 # print(math.ceil((datetime.now().date() - date(2021, 1, 10)).days % 28 / 7))
 # print(caption)
-# print(datetime.now().strftime("%A"))
+# print(datetime.now().weekday())
+# print(datetime.now().date())
+# print(math.floor((datetime.now().date() - date(2021, 2, 1)).days % 28 / 7))
 
 # message handlers
 
@@ -64,8 +68,8 @@ def success(message: types.Message):
 	hourly_sched.shutdown()
 	bot.send_message(my_chat_id, "Красавчик!", reply_markup=markup_clear)
 
-@bot.message_handler(func=lambda message: message.text == txt_postpone)
-def postpone(message: types.Message):
-  bot.send_message(my_chat_id, "ок, подождём...", reply_markup=markup_clear)
+# @bot.message_handler(content_types=['photo'])
+# def image_id(message: types.Message):
+#   bot.send_message(my_chat_id, message.photo[0].file_id)
 
 bot.polling()
