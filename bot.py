@@ -68,6 +68,10 @@ def success(message: types.Message):
 	hourly_sched.shutdown()
 	bot.send_message(my_chat_id, "Красавчик!", reply_markup=markup_clear)
 
+@bot.message_handler(func=lambda message: message.text == txt_postpone)
+def postpone(message: types.Message):
+  bot.send_message(my_chat_id, "ок, подождём...", reply_markup=markup_clear)
+
 # @bot.message_handler(content_types=['photo'])
 # def image_id(message: types.Message):
 #   bot.send_message(my_chat_id, message.photo[0].file_id)
