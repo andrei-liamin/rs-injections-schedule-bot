@@ -31,12 +31,12 @@ markup.add(btn_done, btn_postpone)
 
 @daily_sched.scheduled_job('cron', day_of_week='mon-sun', hour=7, minute=30, second=0)
 def daily_job():
-	week = str(math.ceil((datetime.now().date() - date(2021, 1, 10)).days % 28 / 7))
+	week_int = math.floor((datetime.now().date() - date(2021, 1, 11)).days / 7) % 4
+	week_day_int = datetime.now().weekday()
+
+	week = str(week_int + 1)
 	week_day = datetime.now().strftime("%A")
 	caption = week + " " + week_day
-
-	week_int = math.floor((datetime.now().date() - date(2021, 1, 10)).days % 28 / 7)
-	week_day_int = datetime.now().weekday()
 
 	body_scheme_photo_id = body_scheme_photo_ids[week_int][week_day_int]
 
@@ -45,15 +45,6 @@ def daily_job():
 		bot.send_photo(my_chat_id, photo=body_scheme_photo_id, caption=caption, reply_markup=markup)
 	hourly_sched.start()
 daily_sched.start()
-
-# test
-
-# print(type((date(2021, 1, 7) - date(2021, 1, 4)).days))
-# print(math.ceil((datetime.now().date() - date(2021, 1, 10)).days % 28 / 7))
-# print(caption)
-# print(datetime.now().weekday())
-# print(datetime.now().date())
-# print(math.floor((datetime.now().date() - date(2021, 2, 1)).days % 28 / 7))
 
 # message handlers
 
