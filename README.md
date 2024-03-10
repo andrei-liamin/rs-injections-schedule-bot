@@ -14,7 +14,24 @@ then activate environment:
 env\Scripts\activate
 ```
 
-## How to deploy
+deactivate environment:
+```
+deactivate
+```
+
+## How to deploy on VPS
+
+deploy on heroku with github connected
+then activate script with command in heroku CLI:
+```
+heroku ps:scale worker=1
+```
+turn off heroku dyno to test bot locally
+```
+heroku ps:scale worker=0
+```
+
+## How to deploy on Heroku
 
 deploy on heroku with github connected
 then activate script with command in heroku CLI:

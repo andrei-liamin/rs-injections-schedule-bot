@@ -29,7 +29,7 @@ btn_done = types.KeyboardButton(txt_done)
 btn_postpone = types.KeyboardButton(txt_postpone)
 markup.add(btn_done, btn_postpone)
 
-@daily_sched.scheduled_job('cron', day_of_week='mon-sun', hour=8, minute=0, second=0)
+@daily_sched.scheduled_job('cron', day_of_week='mon-sun', hour=10, minute=0, second=0)
 def daily_job():
 	week_int = math.floor((datetime.now().date() - date(2021, 1, 11)).days / 7) % 4
 	week_day_int = datetime.now().weekday()
@@ -60,6 +60,30 @@ def message_props(message: types.Message):
 def message_props(message: types.Message):
 	if hourly_sched.state == 2:
 		hourly_sched.resume()
+	elif hourly_sched.state == 0:
+		hourly_sched.start()
+
+@bot.message_handler(commands=['state_h'])
+def message_props(message: types.Message):
+	state_res = ""
+	if hourly_sched.state == 0:
+		state_res = "stopped"
+	elif hourly_sched.state == 1:
+		state_res = "running"
+	else:
+		state_res = "paused"
+	bot.send_message(my_chat_id, state_res, reply_markup=markup_clear)
+
+@bot.message_handler(commands=['state_d'])
+def message_props(message: types.Message):
+	state_res = ""
+	if daily_sched.state == 0:
+		state_res = "stopped"
+	elif daily_sched.state == 1:
+		state_res = "running"
+	else:
+		state_res = "paused"
+	bot.send_message(my_chat_id, state_res, reply_markup=markup_clear)
 
 markup_clear = types.ReplyKeyboardRemove()
 
@@ -73,10 +97,6 @@ def success(message: types.Message):
 def postpone(message: types.Message):
 	if hourly_sched.state == 1:
 		bot.send_message(my_chat_id, "ок, подождём...", reply_markup=markup_clear)
-
-@bot.message_handler(func=lambda message: message.text == "state")
-def postpone(message: types.Message):
-  bot.send_message(my_chat_id, hourly_sched.state, reply_markup=markup_clear)
 
 # @bot.message_handler(content_types=['photo'])
 # def image_id(message: types.Message):
