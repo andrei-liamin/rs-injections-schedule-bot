@@ -34,10 +34,27 @@ systemctl status rs-injections-schedule-bot
 
 ## How to deploy on VPS
 
-copy changed files on VPS
+copy changed files on VPS to:
+/home/dron/tg-bots/rs-injections-schedule-bot/
+
 then restart service:
 ```
 systemctl restart rs-injections-schedule-bot
+```
+
+## Question template for AI (Copilot, chatGPT or another)
+
+```
+Context:
+# here explain your context, e.g
+I'm writing a code in python for my telegram bot. I'm using telebot library for that.
+
+Goal:
+# here explain your goal to achive, e.g
+Can you please fix and explain why I don't receive images in my bot.
+
+# then paste snippet within triple ` brackets
+
 ```
 
 # Useful resources
