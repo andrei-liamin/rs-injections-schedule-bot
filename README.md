@@ -19,6 +19,19 @@ deactivate environment:
 deactivate
 ```
 
+## How to stop/start bot service on VPS when test the bot locally
+
+```
+systemctl stop rs-injections-schedule-bot
+```
+```
+systemctl start rs-injections-schedule-bot
+```
+get service status description:
+```
+systemctl status rs-injections-schedule-bot
+```
+
 ## How to deploy on VPS
 
 copy changed files on VPS
@@ -27,8 +40,7 @@ then restart service:
 systemctl restart rs-injections-schedule-bot
 ```
 
-
-## Useful resources
+# Useful resources
 
 Telegram API
 https://core.telegram.org/bots/api
